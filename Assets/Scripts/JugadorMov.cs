@@ -9,9 +9,6 @@ namespace Jugador
         #region Variables
         //movimiento
         public float velocidad;
-        [SerializeField] public float velocidadBoost = 5;
-        private bool booster = false;
-        private float tiempoBooster = 3f;
 
         //animaciones
         public Animator animator;
@@ -26,38 +23,39 @@ namespace Jugador
         #endregion
 
         #region code
-        void movimiento ()
+        void movimiento()
         {
             float movimientohorizontal = Input.GetAxis("Horizontal") * velocidad * Time.deltaTime;
             float movimientovertical = Input.GetAxis("Vertical") * velocidad * Time.deltaTime;
             transform.Translate(movimientohorizontal, movimientovertical, 0);
-            
+
             //animacion
-            Playermov = new Vector2(movimientohorizontal,movimientovertical).normalized; //.normalized para normalizar el num del vector
-            animator.SetFloat("X", Playermov.x);
-            animator.SetFloat ("Y", Playermov.y);
+            Playermov = new Vector2(movimientohorizontal, movimientovertical).normalized; //.normalized para normalizar el num del vector
+            if (Playermov.x != 0)
+            {
+                animator.SetFloat("X", Playermov.x);
+                animator.SetFloat("Y", Playermov.y);
+            }
+
             animator.SetFloat("Speed", Playermov.sqrMagnitude);
         }
         private void OnTriggerEnter2D(Collider2D collision) //para boostear la velocidad del pj
         {
-            if (collision.gameObject.CompareTag("Boost"))
+            if (collision.gameObject.CompareTag("Interactuable"))
             {
-                booster = true;
-                if (booster == true)
-                {
-                    velocidad = velocidadBoost;
-                    Invoke("EndBoost", tiempoBooster);
-                    //Debug.Log("Boosteando, velocidad: " + velocidad);
-                }
-                collision.gameObject.SetActive(false);
+                Debug.Log("Objeto Interactuable, aprete E para interactuar");
+                //collision.gameObject.SetActive(false);
             }
+            if (collision.gameObject.CompareTag("Dialogo"))
+            {
+                Debug.Log("Dialogo disponible, aprete E para interactuar");
+                //collision.gameObject.SetActive(false);
+            }
+            if (collision.gameObject.CompareTag("Enemy"))
+            {
+                Debug.Log("GAMEOVER");
+            }
+            #endregion
         }
-        void EndBoost()
-        {
-            booster = false;
-            velocidad = 3;
-            //Debug.Log("Terminó el Boost, velocidad: " + velocidad);
-        }
-        #endregion
     }
 }
